@@ -10,16 +10,16 @@ splitGraphFile(inputFile, nSplits, outputPath, isNFS = FALSE)
 
 \arguments{
   \item{inputFile}{
-    the input file which contains the complete adjacency list of a graph
+    the input file which contains the complete adjacency list of a graph. An absolute path should be used.
   }
   \item{nSplits}{
     the desired number of partitions in the graph. It may change based on the total number of vertices. It will be translated to the number of split files.
   }
   \item{outputPath}{
-    it is the path for storing the output split files, it should be similar for master and workers
+    it is the path for storing the output split files, it should be similar for master and workers. An absolute path should be used.
   }
   \item{isNFS}{
-    TRUE indicates that outputPath is on NFS; therefore, only one copy of files will be sent the destination. When it is FALSE (defualt) a copy of the files will be sent to every active node in the pool.
+    TRUE indicates that outputPath is on NFS; therefore, only one copy of files will be sent to the destination. When it is FALSE (defualt) a copy of the files will be sent to every active node in the pool.
   }
 }
 

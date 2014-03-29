@@ -36,7 +36,7 @@ splitGraphFile <- function(inputFile, nSplits, outputPath, isNFS = FALSE) {
         stop("The valid path for the output files should be specified as a string\n")
     if(isNFS) {
         check <- system(paste("ls",outputPath), intern=TRUE)
-        if(!is.null(attributes(check)$status))
+        if(! is.null(attributes(check)))
             stop("cannot access the output path")
     }
     
@@ -46,8 +46,9 @@ splitGraphFile <- function(inputFile, nSplits, outputPath, isNFS = FALSE) {
     inputPath <- paste(tokens[-length(tokens)], collapse="/")
     # creating a temp subdirectory for generating splits
     tempPath <- paste(inputPath,"/tempSGF", sep="")
+    system(paste("rm -r ", tempPath), ignore.stderr = TRUE) # to make sure that the temp subdirectory does not exist
     success <- system(paste("mkdir ", tempPath))
-    if(success == 1)
+    if(success != 0)
         stop("Cannot write the temporary files in ", inputPath)
     tempFile <- paste(tempPath,"/",fileName, sep="")
 
@@ -59,7 +60,7 @@ splitGraphFile <- function(inputFile, nSplits, outputPath, isNFS = FALSE) {
 
     if(isNFS) {
         commArg <- paste("mv ", tempFile, "?* ", outputPath, sep="")
-        system(commArg)
+        success <- system(commArg)
     } else {
         # copy the files to the workers one by one
         workers <- levels(distributedR_status()$Workers)
@@ -67,10 +68,19 @@ splitGraphFile <- function(inputFile, nSplits, outputPath, isNFS = FALSE) {
             thisW <- workers[[w]]
             workerName <- strsplit(thisW,":", fixed=TRUE)[[1]][[1]]
             cat("Sending the files to ", workerName, "\n")
+            if(nSplits == 1) {
+                check <- system(paste("ssh ", workerName, " ls ", outputPath, sep=""), intern=TRUE)
+                success <- attributes(check)
+                if(! is.null(success)) break
+            }
             commArg <- paste("scp ", tempFile, "?* ", workerName, ":", outputPath, sep="")
-            system(commArg)
+            success <- system(commArg)
+            if(success != 0) break
+
         }
     }
+    if(success != 0)
+        stop("Split was unsuccessful. At least one of the nodes has problem to write on the specified outputPath.")
     # removing the temp subdirectory
     commArg <- paste("rm -r ", tempPath)
     system(commArg)

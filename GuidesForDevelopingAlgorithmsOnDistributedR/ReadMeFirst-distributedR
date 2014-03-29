@@ -1,0 +1,72 @@
+HP Vertica Early Access HP Vertica Distributed R 0.5 version, March 2014
+
+This file provides information about:
+  * New Features in the Version 0.5 
+  * Providing Feedback
+  * Downloading and Installing the files required for the Early Access HP Vertica Distributed R Pack
+  * About vRODBC
+
+NEW FEATURES IN 0.5
+--------------------
+* Distributed R can now recover from programming errors without terminating the Distributed R session.
+* The Random Forest alogrithm is now fully supported.
+* Distributed R now uses updated versions of the Rcpp (version 0.10.6) and RInside (version 0.2.10) packages.
+* The loader dataLoader has been removed from the HPDGLM package.  It has been replaced by db2arrays in the HPdata package.
+* The loaders sampleLoader and center loader have been removed from the HPdcluster package.  They have been replaced by db2darray and db2matrix in the HPdata package.
+* The HPdata package now includes the function splitGraphFile for distributing graph file splits among the nodes in a cluster.
+
+WORK IN PROGRESS
+-----------------
+The following functionality is still undergoing development and testing.  It is present in this release but is subject to change.
+* This release includes the HPdgraph package and the PageRank algorithm.
+
+
+DOWNLOADING AND INSTALLING THE EARLY ACCESS HP Vertica Distributed R 
+--------------------------------------------------------------------
+
+  1. Distributed R download includes the following files:
+      Documents:
+        Distributed-R-Installation-Guide.pdf
+        Distributed-R-UserGuide.pdf
+        Distributed-R-Manual.pdf
+        HPDGLM-Manual.pdf
+        HPDGLM-UserGuide.pdf
+	HPdata-Manual.pdf
+	HPdata-UserGuide.pdf
+	HPdclassifier-Manual.pdf
+	HPdclassifier-UserGuide.pdf
+	HPdcluster-Manual.pdf
+	HPdcluster-UserGuide.pdf
+	HPdgraph-Manual.pdf
+	HPdgraph_UserGuide.pdf
+        vRODBC-Installation-Guide.pdf
+
+      Software: (xxx denotes the build number)
+        vRODBC_0.5.0-xxx.tar.gz
+        vertica-distributedR-0.5.0-0.xxx.el6.x86_64.rpm
+
+  2. From https://my.vertica.com/dowloads, download the following:
+      * 6.1.3 or higher version of the HP Vertica server.
+      * verticaodbc ODBC driver (required for vRODBC) 
+
+  3. You must uninstall all old versions of distributedR and HPGDLM before installing the latest version. If you currently have distributedR or HPDGLM installed, then follow the instructions in section 6 of Distributed-R-Installation-Guide.pdf.
+
+  4. To install the latest Early Access HP Vertica Distributed R Pack follow the directions in section 3 of Distributed-R-Installation-Guide.pdf. 
+
+  5. If you are connecting to an HP Vertica Database, install vRODBC by following the directions in vRODBC-Installation-Guide.pdf.
+
+ABOUT vRODBC
+------------
+  vRODBC is an ODBC client which provides database connectivity  to the R environment. vRODBC is an HP Vertica enhanced version of the RODBC open-source ODBC client. vRODBC provides significantly faster data transfer rates from HP Vertica to systems running R-instances than RODBC for many types of data.  vRODBC provides significantly better data load performance than RODBC for data sets including numeric values, floating point numbers and boolean values.  For Character data types, you can also achieve better data load performance with vRODBC if you load the data in your R-environment as 'characters' rather than 'factors'.  Note that you must set the R-env option stringsAsFactors to FALSE to obtain better character data load performance.
+
+DOWNLOADING THE DISTRIBUTED R SOURCE CODE
+-----------------------------------------
+The Distributed R source code is available for download at https://github.com/vertica/DistributedR under the terms of the GNU General Public License.  
+
+
+----------------------------------------------------------------------------
+PROVIDING FEEDBACK
+
+Your feedback in evaluating the Early Access HP Vertica Distributed R Pack is important to HP Vertica. To provide input or report problems with the Early Access HP Vertica Distributed R Pack, use Vertica community to post questions and comments https://community.vertica.com/vertica/categories/vertica_innovations.
+
+----------------------------------------------------------------------------

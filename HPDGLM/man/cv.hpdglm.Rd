@@ -37,7 +37,7 @@ cv.hpdglm(responses, predictors, hpdglmfit, cost = hpdCost,
 \value{
     \item{call }{the original call to cv.hpdglm}
     \item{K }{number of folds used at the input}
-    \item{delta }{a vector of length two. The first component is the raw validation estimate of prediction error. The second component is the adjusted validation estimate. Lower cost indicates better fitting. In more detail, the 1st-cost is prediction cost of new model on test data, and the 2nd-cost is [1st-cost + (cost of the old model on all data – the cost of the new model on all data)]
+    \item{delta }{a vector of length two. The first component is the raw validation estimate of prediction error. The second component is the adjusted validation estimate. Lower cost indicates better fitting. In more detail, the 1st-cost is prediction cost of new model on test data, and the 2nd-cost is [1st-cost + (cost of the old model on all data - the cost of the new model on all data)]
     }
     \item{seed }{the value of .Random.seed when cv.hpdglm was called.}
 }

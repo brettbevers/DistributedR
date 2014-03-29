@@ -128,6 +128,10 @@ function(x, nExecutor, ...)
         if (!is.factor(ytest) && NROW(ytest) == 0)
             stop("assigned ytest is empty")
         if(is.data.frame(ytest)) ytest <- ytest[,1]
+        if(is.null(xtest)) 
+            stop("xtest is not available")
+        if(NROW(ytest) != NROW(xtest))
+            stop("length of ytest must be the same as xtest")
     }
 
     ## Make sure mtry is in reasonable range.
@@ -208,22 +212,22 @@ function(x, nExecutor, ...)
             remainder <- inputD$ntree %% inputD$nExecutor
             if( idx <= remainder) inputD$ntree <- quotient + 1
             else inputD$ntree <- quotient
-            # setting seed only for test purpose
-            if(!is.null(inputD$setSeed)) {
-                set.seed(inputD$setSeed[idx])
-            }
+
+            set.seed(inputD$setSeed[idx])
 
             oli <- list(do.call(".local_randomForest.default", inputD))
 
-            # y is the same for all trees
-            if(idx != 1) 
-                oli[[1]]$y <- NULL
-            if(oli[[1]]$type == "classification") {
-                # confusion will be calculated after combine
-                oli[[1]]$confusion <- NULL
-            } else if(oli[[1]]$type == "unsupervised") {
-                # votes for unsupervised mode can be removed
-                oli[[1]]$votes <- NULL
+            if( inherits(oli[[1]], "randomForest") ) { # when there is no error
+                # y is the same for all trees
+                if(idx != 1) 
+                    oli[[1]]$y <- NULL
+                if(oli[[1]]$type == "classification") {
+                    # confusion will be calculated after combine
+                    oli[[1]]$confusion <- NULL
+                } else if(oli[[1]]$type == "unsupervised") {
+                    # votes for unsupervised mode can be removed
+                    oli[[1]]$votes <- NULL
+                }
             }
 
             update(oli)
@@ -241,7 +245,7 @@ function(x, nExecutor, ...)
             if(is.darray(xtest) && xtest@sparse)
                 stop("Sparse darray is not supported for xtest")
         } else # splits of this dframe will have 0 columns and 0 rows which can be indication of its being NULL insdide foreach 
-            xtest <- dframe(c(1,1),c(1,1)) 
+            xtest <- dframe(c(nExecutor,1),c(1,1)) 
         # validating y
         if(!is.null(y)) {
             if(!is.darray(y) && !is.dframe(y))
@@ -250,7 +254,7 @@ function(x, nExecutor, ...)
                 stop("Sparse darray is not supported for y")
             if(is.darray(y) && Stratify) stop("sampsize should be of length one")
         } else # splits of this dframe will have 0 columns and 0 rows which can be indication of its being NULL insdide foreach 
-            y <- dframe(c(1,1),c(1,1)) 
+            y <- dframe(c(nExecutor,1),c(1,1)) 
         # validating ytest
         if(!is.null(ytest)) {
             if(is.null(y))
@@ -262,7 +266,7 @@ function(x, nExecutor, ...)
             if(is.darray(ytest) && ytest@sparse)
                 stop("Sparse darray is not supported for ytest")
         } else # splits of this dframe will have 0 columns and 0 rows which can be indication of its being NULL insdide foreach 
-            ytest <- dframe(c(1,1),c(1,1)) 
+            ytest <- dframe(c(nExecutor,1),c(1,1)) 
 
         # Each argument of foreach function is limited to 64MB
         # parallel creation of the sub-forests
@@ -281,22 +285,22 @@ function(x, nExecutor, ...)
             remainder <- inputD$ntree %% inputD$nExecutor
             if( idx <= remainder) inputD$ntree <- quotient + 1
             else inputD$ntree <- quotient
-            # setting seed only for test purpose
-            if(!is.null(inputD$setSeed)) {
-                set.seed(inputD$setSeed[idx])
-            }
+
+            set.seed(inputD$setSeed[idx])
 
             oli <- list(do.call(".local_randomForest.default", inputD))
 
-            # y is the same for all trees
-            if(idx != 1) 
-                oli[[1]]$y <- NULL
-            if(oli[[1]]$type == "classification") {
-                # confusion will be calculated after combine
-                oli[[1]]$confusion <- NULL
-            } else if(oli[[1]]$type == "unsupervised") {
-                # votes for unsupervised mode can be removed
-                oli[[1]]$votes <- NULL
+            if( inherits(oli[[1]], "randomForest") ) { # when there is no error
+                # y is the same for all trees
+                if(idx != 1) 
+                    oli[[1]]$y <- NULL
+                if(oli[[1]]$type == "classification") {
+                    # confusion will be calculated after combine
+                    oli[[1]]$confusion <- NULL
+                } else if(oli[[1]]$type == "unsupervised") {
+                    # votes for unsupervised mode can be removed
+                    oli[[1]]$votes <- NULL
+                }
             }
 
             update(oli)
@@ -372,10 +376,11 @@ function(x, nExecutor, ...)
         predicted <- 0
         for(i in 1:length(rflist)) {
             oob.times <- oob.times + rflist[[i]]$oob.times
-            predicted <- predicted + ifelse(is.na(rflist[[i]]$predicted), 0, rflist[[i]]$predicted) * rflist[[i]]$ntree
+            # when rflist[[i]]$oob.times==0, then rflist[[i]]$predicted==NA
+            predicted <- predicted + ifelse(is.na(rflist[[i]]$predicted), 0, rflist[[i]]$predicted) * rflist[[i]]$oob.times
         }
         rf$oob.times <- oob.times
-        rf$predicted <- predicted / ntree
+        rf$predicted <- predicted / oob.times
     }
 
     rf
@@ -434,6 +439,7 @@ function(x, nExecutor, ...)
     if (mtry < 1 || mtry > p)
         warningMsg[[length(warningMsg)+1]] <- "invalid mtry: reset to within valid range"
     mtry <- max(1, min(p, round(mtry)))
+
     if (!is.null(y)) {
         if (length(y) != n) return("length of response must be the same as predictors")
         addclass <- FALSE

@@ -10,7 +10,7 @@ file2dgraph(pathPrefix, nVertices, verticesInSplit, isWeighted)
 
 \arguments{
   \item{pathPrefix}{
-    the path and prefix to the files. It should be the same on all nodes of the cluster.
+    the path and prefix to the files. It should be an absolute path and the same on all nodes of the cluster.
   }
   \item{nVertices}{
     the total number of vertices in the graph
@@ -31,6 +31,8 @@ nFiles == ceiling(nVertices / verticesInSplit) where nFiles is the number of fil
   \code{isWeighted} must be carefully set TRUE or FALSE. Either all the edges should be weighed or none of them. When there is no weight, the return value for \code{W} will be \code{NULL}.
 
   Any comment or extra character in the lines will generate error.
+
+  All the nodes of the cluster should have access to all the split files, whether they are on a shared storage or they are distributed among the nodes. Nevertheless, only a portion of split files will be used by R-executors of a node. When the files are distributed among the nodes, file2dgraph function will be robust against corruption of the files which are not used by any R-executors. It should be noticed that this function does not detect the possible inconsistency of the distributed files, but it is assumed that they are the same from point of view of all the nodes. 
 }
 
 \value{

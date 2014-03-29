@@ -105,6 +105,11 @@ RcppExport SEXP hpdsplitter (SEXP inputfile, SEXP rows, SEXP cols, SEXP outfile)
       Rprintf("Error: There is a line with only one vertex.\n");
       return R_NilValue;
     }
+    if (d < 0 || e < 0) {
+      inFile.close();
+      Rprintf("Error: Found a negative number for a vertex ID. Vertex IDs should be non-negative integers.\n");
+      return R_NilValue;
+    }
 
     v = max(v, d);
 //    zerobased |= d==0;

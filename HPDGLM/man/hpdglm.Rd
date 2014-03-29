@@ -28,7 +28,7 @@ offset=NULL, control=list(...), method="hpdglm.fit.Newton", ...)
     it specifies the family function for regression. The supported family-links at the time of this writing are gaussian(identity), binomial(logit), and poisson(log). The mentioned links are the default ones for their families; so, specifying them is optional. The default family is Gaussian.
   }
   \item{weights}{
-    it is an optional darray of ‘prior weights’ to be used in the fitting process. It has a single column. The number of rows and its number of blocks should be the same as responses. The values should not be negative (greater than or equal to zero). Weight zero on a sample makes it be ignored.
+    it is an optional darray of 'prior weights' to be used in the fitting process. It has a single column. The number of rows and its number of blocks should be the same as responses. The values should not be negative (greater than or equal to zero). Weight zero on a sample makes it be ignored.
   }
   \item{na_action}{
     it indicates what should happen when the data contain missed values. Values of NA, NaN, and Inf in samples are treated as missed values. There are two options for this argument exclude and fail. When exclude is selected (the default choice), the weight of any sample with missed values will become zero, and that sample will be ignored in the fitting process. In the darray which will be created for residuals, the value corresponding to these samples will be NA. When fail is selected, the function will stop in the case of any missed value in the dataset.
@@ -49,7 +49,7 @@ offset=NULL, control=list(...), method="hpdglm.fit.Newton", ...)
     an optional list of controlling arguments. The optional elements of the list and their default values are: epsilon = 1e-8, maxit = 25, trace = FALSE, rigorous = FALSE.
   }
   \item{method}{
-    this argument reserved for the future improvement. The only available fitting method at the moment is “hpdglm.fit.Newton”. In the future, if we have new developed algorithms, this argument can be used to switch between them.
+    this argument reserved for the future improvement. The only available fitting method at the moment is "hpdglm.fit.Newton". In the future, if we have new developed algorithms, this argument can be used to switch between them.
   }
   \item{\dots}{
     arguments to be used to form the default
@@ -77,11 +77,11 @@ offset=NULL, control=list(...), method="hpdglm.fit.Newton", ...)
   \item{boundary}{logical. Is the fitted value on the boundary of the attainable values?}
   \item{responses}{the darray of responses.}
   \item{predictors}{the darray of predictors.}
-  \item{na_action}{this item exists only when a few samples are excluded because of missed data. It is a list containing type “exclude” and the number of excluded samples.}
+  \item{na_action}{this item exists only when a few samples are excluded because of missed data. It is a list containing type "exclude" and the number of excluded samples.}
   \item{call}{the matched call.}
   \item{offset}{the offset darray used.}
   \item{control}{the value of the control argument used.}
-  \item{method}{the name of the fitter function used, currently always “hpdglm.fit.Newton”.}
+  \item{method}{the name of the fitter function used, currently always "hpdglm.fit.Newton".}
 }
 \author{
 Arash Fard}

@@ -222,16 +222,19 @@ file2dgraph <- function(pathPrefix, nVertices, verticesInSplit, isWeighted) {
             f <- tryCatch({
                   scan(file=fname,what=list(x=0,y=0,w=0), multi.line =FALSE)
                 }, error = function(e){
-                  erri <- list(e)
+                  erri <- list(file=fname, error=e)
                   update(erri)
                   NULL
                 })
             if(! is.null(f)) {
-                if (row_wise) {
+                if (min(f$x) < 0 || min(f$y) < 0 || max(f$x) > nVertices || max(f$y) > nVertices) {
+                    erri <- list(file=fname, error="Found out of the range vertices in the split file")
+                    update(erri)
+                } else if (row_wise) {
                     start <- (myIdx-1) * blockSize # start row in the block
                     end <- start + nrow(x)
                     if(min(f$x) < start || max(f$x) >= end) {
-                        erri <- list("Error in the range of vertices in the split files")
+                        erri <- list(file=fname, error="Error in the range of vertices in the split files")
                         update(erri)
                     } else {
                         x <- sparseMatrix(i=f$x-start, j=f$y, x=1, index1=FALSE, dims=dim(x))
@@ -243,7 +246,7 @@ file2dgraph <- function(pathPrefix, nVertices, verticesInSplit, isWeighted) {
                     start <- (myIdx-1) * blockSize # start column in the block
                     end <- start + ncol(x)
                     if(min(f$y) < start || max(f$y) >= end) {
-                        erri <- list("Error in the range of vertices in the split files")
+                        erri <- list(file=fname, error="Error in the range of vertices in the split files")
                         update(erri)
                     } else {
                         x <- sparseMatrix(i=f$x, j=f$y-start, x=1, index1=FALSE, dims=dim(x))
@@ -263,16 +266,19 @@ file2dgraph <- function(pathPrefix, nVertices, verticesInSplit, isWeighted) {
             f <- tryCatch({
                   scan(file=fname,what=list(x=0,y=0), multi.line =FALSE)
                 }, error = function(e){
-                  erri <- list(e)
+                  erri <- list(file=fname, error=e)
                   update(erri)
                   NULL
                 })
             if(! is.null(f)) {
-                if (row_wise) {
+                if (min(f$x) < 0 || min(f$y) < 0 || max(f$x) > nVertices || max(f$y) > nVertices) {
+                    erri <- list(file=fname, error="Found out of the range vertices in the split file")
+                    update(erri)
+                } else if (row_wise) {
                     start <- (myIdx-1) * blockSize # start row in the block
                     end <- start + nrow(x)
                     if(min(f$x) < start || max(f$x) >= end) {
-                        erri <- list("Error in the range of vertices in the split files")
+                        erri <- list(file=fname, error="Error in the range of vertices in the split files")
                         update(erri)
                     } else {
                         x <- sparseMatrix(i=f$x-start, j=f$y, x=1, index1=FALSE, dims=dim(x))
@@ -282,14 +288,13 @@ file2dgraph <- function(pathPrefix, nVertices, verticesInSplit, isWeighted) {
                     start <- (myIdx-1) * blockSize # start column in the block
                     end <- start + ncol(x)
                     if(min(f$y) < start || max(f$y) >= end) {
-                        erri <- list("Error in the range of vertices in the split files")
+                        erri <- list(file=fname, error="Error in the range of vertices in the split files")
                         update(erri)
                     } else {
                         x <- sparseMatrix(i=f$x, j=f$y-start, x=1, index1=FALSE, dims=dim(x))
                         update(x)
                     }
-                }
-                
+                }                
                 
             }
         })

@@ -15,7 +15,6 @@
  }
  Main Functions:
  \itemize{
-  \item {dataLoader:} {It is a simple data loader to load a dataset (a set of samples) from a table in HP Vertica to a pair of R darrays.}
   \item {hpdglm:} {It is a distributed version of glm.}
   \item {v.hpdglm:} {This function is implemented for evaluating a model built by hpdglm using Split-Sample-Validation method.}
   \item {cv.hpdglm:} {This function is implemented for evaluating a model built by hpdglm using Cross-Validation method.}

@@ -63,15 +63,15 @@ hpdpagerank <- function(dgraph, niter = 1000, eps = 0.001, damping=0.85, persona
   # Checking personalized
   if (!is.null(personalized)) {
       if(!is.darray(personalized)) stop("personalized argument must be a darray")
-      if(any(dim(personalized) != c(1,nVertices)) || npartitions(personalized) != npartitions(dgraph))
-        stop("dimensions and number of partitions in personalized should be compatible with dgraph")
+      if(any(dim(personalized) != c(1,nVertices)) || personalized@blocks[2] != dgraph@blocks[2])
+        stop("dimensions and partitions in personalized should be compatible with dgraph")
       if(.naCheckPageRank(personalized, trace) > 0) stop("missed values in personalized darray!") 
   }
   # Checking weights
   if (!is.null(weights)) {
     if(!is.darray(weights)) stop("weights argument must be a darray")
     if(weights@sparse != dgraph@sparse) stop("weights should be similar to dgraph for sparse feature")
-    if(any(dim(weights) != dim(dgraph)) || npartitions(weights) != npartitions(dgraph))
+    if(any(dim(weights) != dim(dgraph)) || any(weights@blocks != dgraph@blocks))
       stop("weights should have the same dimension and partitioning as dgraph")
     if(.naCheckPageRank(weights, trace) > 0) stop("missed values in weights darray!") 
   }
@@ -80,8 +80,14 @@ hpdpagerank <- function(dgraph, niter = 1000, eps = 0.001, damping=0.85, persona
   blockSize <- dgraph@blocks[2]
 
   niter <- as.numeric(niter)
+  if (! niter > 0 )
+    stop("Invalid iteration count, it should be a positive number")
   eps <- as.numeric(eps)
+  if (! eps > 0 )
+    stop("Invalid value for 'eps', it should be a positive number")
   damping <- as.numeric(damping)
+  if (damping <= 0 || damping >= 1)
+    stop("Invalid damping factor, it should be between 0 and 1")
 
   ### Initialization
   if (trace) {
@@ -247,7 +253,7 @@ hpdpagerank <- function(dgraph, niter = 1000, eps = 0.001, damping=0.85, persona
   foreach(i, 1:nparts, progress=trace, function(tempArrayi=splits(tempArray,i), xi=splits(X,i), cover=cover){
     missed <- !is.finite(xi)
     if(any(missed)) {
-      tempArrayi <- sum(missed)
+      tempArrayi <- matrix(sum(missed))
       update(tempArrayi)
       if(cover) {
         xi[missed] <- 0

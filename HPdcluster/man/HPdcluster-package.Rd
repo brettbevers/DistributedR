@@ -17,8 +17,7 @@
  Main Functions:
  \itemize{
   \item {hpdkmeans:} {It is a distributed version of kmeans.}
-  \item {sampleLoader:} {It is an example for loading a set of samples stored in a table to a darray.}
-  \item {centerLoader:} {It is an example for loading a set of centers stored in a table to a matrix.}
+  \item {hpdapply:} {It finds cluster label of a set of samples according to a given set of centers.}
  }
 }
 
